@@ -34,7 +34,7 @@ const Header = () => {
         </div>
       </div>
       <div className="ml-2">
-        <Image src="/assets/Group.svg" alt="search" width={110} height={50} />
+        <Image src="/assets/Group.svg" alt="search" width={130} height={50} />
       </div>
     </section>
   );
