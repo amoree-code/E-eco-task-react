@@ -51,7 +51,7 @@ const ProductCell = ({ product }) => {
                 <Image
                   alt="Card background"
                   className={`object-cover cursor-pointer ${
-                    !item.is_available ? "opacity-50 cursor-not-allowed" : ""
+                    !item.is_available ? "opacity-20 cursor-not-allowed" : ""
                   }`}
                   src={"/assets/shopping.svg"}
                   onClick={() => item.is_available && handleOpenModal(item)}

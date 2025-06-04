@@ -1,21 +1,20 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { HashLoader } from "react-spinners";
+import { BarLoader, HashLoader } from "react-spinners";
 import axios from "axios";
 import GridBlock from "./GridBlock";
 import ProductCell from "./ProductCell";
 
 const fetchBlocks = async () => {
   const response = await axios.get(
-    "https://97894d09-3ce6-408f-8a95-603c37b013a1.mock.pstmn.io/mocks/challenges/frontend/home"
+    "https://run.mocky.io/v3/821b7a26-9da2-4af7-a874-466d5759f60b"
   );
   if (!response.data?.content) {
     throw new Error("Unexpected API response structure");
   }
   const content = response.data.content.map((block) => ({
     ...block,
-    // Ensure we only pass plain objects
     content: block.content.map((item) => ({ ...item })),
     properties: { ...block.properties },
   }));
@@ -30,6 +29,7 @@ const BlockRenderer = () => {
   } = useQuery({
     queryKey: ["blocks"],
     queryFn: fetchBlocks,
+    staleTime: 1000 * 60 * 5,
   });
 
   if (isLoading)
@@ -38,8 +38,30 @@ const BlockRenderer = () => {
         <HashLoader color="#de1d23" loading size={200} speedMultiplier={2} />
       </div>
     );
-  if (error)
-    return <div className="p-4 text-center text-red-500">{error.message}</div>;
+  if (error) {
+    const isUsageLimitError =
+      error.response?.data?.error?.name === "usageLimitError" ||
+      error.message.includes("usage limit");
+
+    return (
+      <div className="w-full h-[calc(100vh-120px)] flex flex-col items-center justify-center text-center px-4">
+        {isUsageLimitError ? (
+          <>
+            <h1 className="mb-4 text-red-600 text-xl font-semibold">
+              لقد تجاوزت الحد الشهري للطلبات.
+            </h1>
+            <p className="mb-4 text-gray-700">
+              فريقكم يسمح بـ 1000 طلب شهرياً على mock server. الرجاء الانتظار
+              حتى بداية الشهر القادم أو الاتصال بالمسؤول لرفع الحد.
+            </p>
+          </>
+        ) : (
+          <h1 className="text-red-500">{error.message}</h1>
+        )}
+        <BarLoader color="#de1d23" loading size={200} />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[1200px] m-auto">
